@@ -40,14 +40,15 @@ async def fetch_user(
             return False
         else:
             return {
-                'username': row.get('username', None),
-                'secret_data': row.get('secret_data', None)
+                'username': row['username'],
+                'secret_data': row['secret_data']
             }
 
 
 def try_make_db() -> None:
     sqlite_db = get_db_path()
     if sqlite_db.exists():
+        print('db exist!')
         return
 
     with sqlite3.connect(sqlite_db) as conn:
@@ -57,7 +58,7 @@ def try_make_db() -> None:
             id INTEGER PRIMARY KEY,
             username TEXT,
             password CHAR(64),
-            secret_data TEXT,
+            secret_data TEXT
             )
         """
         )
@@ -65,7 +66,7 @@ def try_make_db() -> None:
         password_not_hashed = '12344321qwe'
         password_hashed = hashlib.sha256(password_not_hashed.encode()).hexdigest()
         cur.execute(
-            """INSERT INTO users (username, password, secret_data) VALUES (%s, %s, %s)""",
+            """INSERT INTO users (username, password, secret_data) VALUES (?, ?, ?)""",
             (login, password_hashed, 'I love cookies!')
         )
 
